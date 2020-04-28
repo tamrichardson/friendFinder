@@ -1,43 +1,53 @@
-// ===============================================================================
-// LOAD DATA
-// We are linking our routes to a series of "data" sources.
-// These data sources hold arrays of information on table-data, waitinglist, etc.
-// ===============================================================================
 
 var friendsData = require("../data/friends");
 
-// ===============================================================================
-// ROUTING
-// ===============================================================================
-
 module.exports = function (app) {
-  // API GET Requests
-  // Below code handles when users "visit" a page.
-  // In each of the below cases when a user visits a link
-  // (ex: localhost:PORT/api/admin... they are shown a JSON of the data in the table)
-  // ---------------------------------------------------------------------------
 
   app.get("/api/friends", function (req, res) {
     res.json(friendsData);
   });
 
-
-  // API POST Requests
-  // Below code handles when a user submits a form and thus submits data to the server.
-  // In each of the below cases, when a user submits form data (a JSON object)
-  // ...the JSON is pushed to the appropriate JavaScript array
-  // (ex. User fills out a reservation request... this data is then sent to the server...
-  // Then the server saves the data to the tableData array)
-  // ---------------------------------------------------------------------------
-
   app.post("/api/friends", function (req, res) {
-    // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-    // It will do this by sending out the value "true" have a table
-    // req.body is available since we're using the body parsing middleware
-    var userInput = req.body;
-    friendsData.push(req.body);
+
+    var userInput = {
+      name: req.body.name,
+      photo: req.body.photo,
+      scores: [],
+    };
+
     console.log(friendsData);
 
-    // console.log(req.body)
+    var scoresArray = []
+    for (var i = 0; i < req.body.scores.length; i++) {
+      scoresArray.push(parseInt(req.body.scores[i]))
+    }
+    userInput.scores = scoresArray;
+
+    var compareArray = [];
+    for (var i = 0; i < friendsData.length; i++) {
+      var difference = 0;
+      for (var j = 0; j < userInput.scores.length; j++) {
+        difference += Math.abs(userInput.scores[j] - friendsData[i].scores[j]);
+      }
+      compareArray.push(difference)
+    }
+
+    var bffMatch = 0;
+    for (var i = 0; i < compareArray.length; i++) {
+      if (compareArray[i] < compareArray[bffMatch]) {
+        bffMatch = i;
+      }
+    }
+
+    var results = friendsData[bffMatch];
+
+    // after finding match, add user to friends array
+    friendsData.push(userInput);
+
+    // send back to browser the bff match
+    res.json(results);
   });
-};
+}
+
+    // console.log(req.body)
+
