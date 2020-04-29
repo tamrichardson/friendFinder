@@ -37,7 +37,6 @@ FriendFinder
   - server.js
 
 <h1>Tech used</h1>
-FriendFinder
   - JavaScript
   - jQuery
   - HTML
