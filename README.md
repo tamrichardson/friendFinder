@@ -36,7 +36,7 @@ FriendFinder
   - package.json
   - server.js
 
-Technologies used:
+<h1>Tech used</h1>
 FriendFinder
   - JavaScript
   - jQuery
